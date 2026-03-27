@@ -1,53 +1,105 @@
-# 🩸 BloodChain — Emergency Blood Network
+# 🩸 BloodChain — Emergency Blood Donor Registry
+### Stellar Journey to Mastery · Level 3 Orange Belt
 
-### Stellar Journey to Mastery · Level 1 White Belt
-
-**Status:** ✅ Level 1 Complete  
-**Network:** Stellar Testnet  
-**Built with:** Next.js 14 · TypeScript · Tailwind CSS · @creit.tech/stellar-wallets-kit · @stellar/stellar-sdk
+**Live Demo:** https://your-bloodchain.vercel.app
 
 ---
 
-## 🚀 What This Is
+## What This Is
 
-BloodChain is a decentralized emergency blood donor registry built on the Stellar blockchain. 
-
-**Level 1** establishes the blockchain foundation:
-- Wallet connection via Freighter/Stellar Wallets Kit
-- Real-time XLM balance display
-- XLM payment transactions with memo support
-- Transaction history with Stellar Expert explorer links
-- BloodChain design system (dark, medical-emergency aesthetic)
-
-This Level 1 White Belt implementation is the architectural foundation for higher belt levels that will add donor registration, matching algorithms, and reward tokenomics.
+BloodChain is a decentralized emergency blood donor registry on Stellar Soroban testnet.
+Donors register on-chain with blood type and location. Anyone can query the registry.
+The live stats panel polls the smart contract every 8 seconds.
 
 ---
 
-## ✨ Level 1 Features
+## Level 2 + Level 3 Features
 
-- ✅ **Freighter Wallet Integration** — Connect/disconnect via Stellar Wallets Kit
-- ✅ **Balance Display** — Real-time XLM balance on Stellar Testnet
-- ✅ **Send Payments** — Full XLM transaction flow with memo support
-- ✅ **Transaction Feedback** — Success/error states with Stellar Expert links
-- ✅ **Activity Log** — View recent transactions
-- ✅ **BloodChain Design** — Custom dark theme with medical aesthetic
-- ✅ **Responsive Layout** — Mobile-friendly (single column on < 640px)
-- ✅ **Type-Safe** — Full TypeScript implementation
+- ✅ Multi-wallet connect via StellarWalletsKit (Freighter, xBull, Lobstr, WalletConnect)
+- ✅ Soroban smart contract deployed on Stellar testnet
+- ✅ `register_donor` — writes donor record to contract (requires wallet signature)
+- ✅ `get_donor` — reads donor record (no signing needed)
+- ✅ `get_donor_count` — real-time polling every 8 seconds
+- ✅ Transaction status tracking: idle → pending → success/error with progress bar
+- ✅ 3 error types: wallet_not_found · user_rejected · insufficient_balance
+- ✅ 15 Vitest unit tests passing
+- ✅ Loading indicators and animated progress bar
 
 ---
 
-## 🏗️ Project Structure
+## Smart Contract
 
+**Deployed Contract Address:**
+PASTE_YOUR_CONTRACT_ID_HERE
+
+**Contract on Stellar Expert:**
+https://stellar.expert/explorer/testnet/contract/PASTE_YOUR_CONTRACT_ID_HERE
+
+**Transaction Hash (registration call):**
+PASTE_YOUR_FIRST_TX_HASH_HERE
+
+**Verify on Stellar Expert:**
+https://stellar.expert/explorer/testnet/tx/PASTE_YOUR_TX_HASH_HERE
+
+---
+
+## Screenshots
+
+### Wallet Options Modal
+![wallet options](./screenshots/wallet-modal.png)
+
+### Donor Registration Success
+![registration](./screenshots/registration-success.png)
+
+### Test Output (15 tests passing)
+![tests](./screenshots/test-output.png)
+
+---
+
+## Demo Video
+
+https://youtu.be/YOUR_VIDEO_ID
+
+(1 minute: connect → register → live count update → donor lookup)
+
+---
+
+## Stack
+
+Next.js 14 · TypeScript · Tailwind CSS · @creit.tech/stellar-wallets-kit  
+@stellar/stellar-sdk v12 · Soroban SDK 21 (Rust) · Vitest
+
+---
+
+## Run Locally
+
+```bash
+git clone https://github.com/YOUR_USERNAME/bloodchain
+cd bloodchain && npm install
+# Paste your CONTRACT_ID into lib/contract-helper.ts
+npm run dev
 ```
-bloodchain/
-├── app/
-│   ├── globals.css              ← BloodChain design tokens & animations
-│   ├── layout.tsx               ← Root layout with metadata
-│   └── page.tsx                 ← Main dashboard (orchestrates all panels)
-├── components/
-│   ├── WalletConnection.tsx     ← Panel 01: Connect/disconnect wallet
-│   ├── BalanceDisplay.tsx       ← Panel 02: XLM balance with refresh
-│   ├── PaymentForm.tsx          ← Panel 03: Send XLM transaction
+
+## Run Tests
+
+```bash
+npm test
+```
+
+## Deploy Contract
+
+```bash
+cd contract
+stellar contract build
+stellar keys generate --global bloodchain-deployer --network testnet
+stellar keys fund bloodchain-deployer --network testnet
+stellar contract deploy \
+  --wasm target/wasm32-unknown-unknown/release/bloodchain_registry.wasm \
+  --source bloodchain-deployer \
+  --network testnet
+```
+
+---
 │   └── TransactionHistory.tsx   ← Panel 04: Activity log
 ├── lib/
 │   └── stellar-helper.ts        ← Stellar blockchain logic (DO NOT MODIFY)

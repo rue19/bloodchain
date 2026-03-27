@@ -1,103 +1,136 @@
 'use client'
 
-import { useState } from 'react'
-import { stellar } from '@/lib/stellar-helper'
+import { useEffect, useState } from 'react'
+import {
+  StellarWalletsKit,
+  WalletNetwork,
+  WalletType,
+  allowAllModules,
+} from '@creit.tech/stellar-wallets-kit'
 
 interface WalletConnectionProps {
-  onConnect: (publicKey: string) => void
+  onConnect: (publicKey: string, kit: StellarWalletsKit) => void
   onDisconnect: () => void
+}
+
+let kitInstance: StellarWalletsKit | null = null
+
+function getKit() {
+  if (!kitInstance) {
+    kitInstance = new StellarWalletsKit({
+      network: WalletNetwork.TESTNET,
+      selectedWalletId: WalletType.FREIGHTER,
+      modules: allowAllModules(),
+    })
+  }
+  return kitInstance
 }
 
 export default function WalletConnection({ onConnect, onDisconnect }: WalletConnectionProps) {
   const [publicKey, setPublicKey] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [errorType, setErrorType] = useState<string | null>(null)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('bc_wallet_pk')
+    if (stored) {
+      const kit = getKit()
+      setPublicKey(stored)
+      onConnect(stored, kit)
+    }
+  }, [])
 
   const handleConnect = async () => {
     setLoading(true)
     setError(null)
+    setErrorType(null)
     try {
-      const pk = await stellar.connectWallet()
-      setPublicKey(pk)
-      onConnect(pk)
+      const kit = getKit()
+      await kit.openModal({
+        onWalletSelected: async (option) => {
+          kit.setWallet(option.id)
+          const { address } = await kit.getAddress()
+          setPublicKey(address)
+          localStorage.setItem('bc_wallet_pk', address)
+          onConnect(address, kit)
+        },
+      })
     } catch (err: any) {
-      setError(err.message || 'Connection failed')
+      const msg: string = err?.message ?? String(err)
+      if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('not installed')) {
+        setError('Wallet not found. Install Freighter extension first.')
+        setErrorType('wallet_not_found')
+      } else if (msg.toLowerCase().includes('reject') || msg.toLowerCase().includes('declined')) {
+        setError('Wallet connection rejected by user.')
+        setErrorType('user_rejected')
+      } else {
+        setError(`Connection failed: ${msg}`)
+        setErrorType('unknown')
+      }
     } finally {
       setLoading(false)
     }
   }
 
   const handleDisconnect = () => {
-    stellar.disconnect()
+    kitInstance = null
+    localStorage.removeItem('bc_wallet_pk')
     setPublicKey(null)
     setError(null)
     onDisconnect()
   }
 
+  const shortKey = (pk: string) => `${pk.slice(0, 6)}···${pk.slice(-6)}`
+
   return (
     <div className="bc-panel">
       <div className="bc-label">01 · Wallet</div>
 
-      {/* Status row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-        <span className={`status-dot ${publicKey ? 'connected' : ''}`} />
-        <span className={`wallet-addr ${!publicKey ? 'empty' : ''}`}>
-          {publicKey ? stellar.formatAddress(publicKey, 6, 6) : 'Not connected'}
-        </span>
-        {publicKey && <span className="testnet-chip">TESTNET</span>}
-      </div>
-
-      {/* Buttons */}
-      <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-        {!publicKey ? (
+      {!publicKey ? (
+        <>
           <button className="bc-btn bc-btn-primary" onClick={handleConnect} disabled={loading}>
-            {loading ? <><span className="bc-spinner" /> Connecting...</> : 'Connect Wallet'}
+            {loading ? <><span className="bc-spinner" /> Connecting…</> : '⬡ Connect Wallet'}
           </button>
-        ) : (
-          <button className="bc-btn bc-btn-ghost" onClick={handleDisconnect}>
+          <p style={{ fontSize: '0.7rem', color: 'var(--muted)', marginTop: '0.5rem', fontFamily: 'DM Mono, monospace' }}>
+            Freighter · xBull · Lobstr · WalletConnect
+          </p>
+        </>
+      ) : (
+        <>
+          <div className="wallet-connected">
+            <span className="bc-dot-green" />
+            <span className="wallet-addr">{shortKey(publicKey)}</span>
+          </div>
+          <button className="bc-btn bc-btn-ghost" style={{ marginTop: '0.75rem' }} onClick={handleDisconnect}>
             Disconnect
           </button>
-        )}
-      </div>
+        </>
+      )}
 
-      {/* Error */}
       {error && (
-        <div className="bc-feedback error" style={{ marginTop: '0.75rem' }}>
-          ✕ {error}
+        <div className="bc-feedback error" style={{ marginTop: '0.75rem' }} data-error-type={errorType}>
+          {errorType === 'wallet_not_found' && '🔌 '}
+          {errorType === 'user_rejected' && '✋ '}
+          {error}
         </div>
       )}
 
-      {/* Freighter note */}
-      <div className="bc-note" style={{ marginTop: '1rem' }}>
-        Need a wallet?{' '}
-        <a href="https://www.freighter.app/" target="_blank" rel="noreferrer">
-          freighter.app
-        </a>{' '}
-        · Set it to <strong>Testnet</strong> before connecting.
-      </div>
-
-      <Styles />
+      <style>{`
+        .wallet-connected {
+          display: flex; align-items: center; gap: 0.5rem;
+          background: var(--green-dim); border: 1px solid rgba(0,232,122,0.2);
+          border-radius: 6px; padding: 0.5rem 0.75rem;
+        }
+        .bc-dot-green {
+          width: 8px; height: 8px; border-radius: 50%;
+          background: var(--green); animation: pulse-green 2s ease infinite; flex-shrink: 0;
+        }
+        .wallet-addr { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--green); }
+      `}</style>
     </div>
   )
 }
-
-// Component-scoped styles
-function Styles() {
-  return (
-    <style>{`
-      .bc-panel {
-        background: var(--mid);
-        border: 1px solid var(--red-dim);
-        border-radius: 12px;
-        padding: 1.5rem;
-        position: relative;
-        overflow: hidden;
-        transition: border-color 0.2s, box-shadow 0.2s;
-      }
-      .bc-panel:hover {
-        border-color: var(--red);
-        box-shadow: 0 0 24px var(--red-glow);
-      }
       .bc-label {
         font-family: 'DM Mono', monospace;
         font-size: 0.68rem;

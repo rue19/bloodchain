@@ -84,3 +84,85 @@ body::after {
 
 .animate-fadeUp { animation: fadeUp 0.6s ease both; }
 .animate-fadeUp-delay { animation: fadeUp 0.6s ease both 0.2s; }
+
+/* ── L2/L3 additions — APPEND to existing globals.css ── */
+
+.bc-input {
+  width: 100%;
+  background: var(--mid);
+  border: 1px solid var(--muted);
+  border-radius: 5px;
+  padding: 0.55rem 0.75rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.bc-input:focus { border-color: var(--red); }
+.bc-input::placeholder { color: var(--muted); }
+.bc-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.bc-feedback {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 5px;
+  border: 1px solid;
+}
+.bc-feedback.success {
+  color: var(--green); background: var(--green-dim);
+  border-color: rgba(0,232,122,0.3);
+}
+.bc-feedback.error {
+  color: var(--accent); background: rgba(232,0,45,0.07);
+  border-color: var(--red-dim);
+}
+
+.bc-spinner {
+  display: inline-block; width: 12px; height: 12px;
+  border: 2px solid var(--muted); border-top-color: var(--red);
+  border-radius: 50%; animation: spin 0.6s linear infinite;
+}
+
+.bc-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.4rem; padding: 0.55rem 1.2rem; border-radius: 5px;
+  font-family: 'DM Mono', monospace; font-size: 0.82rem; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; border: 1px solid transparent; width: 100%;
+}
+.bc-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.bc-btn-primary { background: var(--red); color: #fff; border-color: var(--red); }
+.bc-btn-primary:hover:not(:disabled) { background: var(--accent); box-shadow: 0 0 16px var(--red-glow); }
+.bc-btn-ghost { background: transparent; color: var(--muted); border-color: var(--muted); }
+.bc-btn-ghost:hover:not(:disabled) { border-color: var(--red); color: var(--red); }
+
+.belt-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
+.bc-panel {
+  background: var(--mid);
+  border: 1px solid var(--red-dim);
+  border-radius: 12px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.bc-panel:hover {
+  border-color: var(--red);
+  box-shadow: 0 0 24px var(--red-glow);
+}
+
+.bc-panel-full {
+  width: 100%;
+}
+
+.bc-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+  display: block;
+}
