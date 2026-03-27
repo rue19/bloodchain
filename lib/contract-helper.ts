@@ -2,7 +2,8 @@
 import * as StellarSdk from '@stellar/stellar-sdk'
 
 // ─── CONFIG ─────────────────────────────────────────────────
-export const CONTRACT_ID = 'PASTE_YOUR_CONTRACT_ID_HERE'
+// Update this with your deployed contract ID after: stellar contract deploy ...
+export const CONTRACT_ID = 'CCCCFK4TVKDTPKLLMLI2I4BDHWYNCKTWXIU3UJ2JIFXVXZAK4CX66RQD'
 export const TESTNET_RPC = 'https://soroban-testnet.stellar.org'
 export const NETWORK_PASSPHRASE = StellarSdk.Networks.TESTNET
 
