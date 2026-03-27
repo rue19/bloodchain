@@ -252,7 +252,7 @@ function parseDonorRecord(val: StellarSdk.xdr.ScVal): DonorRecord | null {
       blood_type: get('blood_type') ? parseStr(get('blood_type')!) : '',
       location: get('location') ? parseStr(get('location')!) : '',
       registered_at: (() => { try { return Number(get('registered_at')!.u64().toString()) } catch { return 0 } })(),
-      is_available: (() => { try { return get('is_available')!.switch().name === 'scvTrue' } catch { return false } })(),
+      is_available: (() => { try { const scVal = get('is_available')!; return (scVal as any).b?.toString() === 'true' } catch { return false } })(),
     }
   } catch { return null }
 }

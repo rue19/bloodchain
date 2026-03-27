@@ -141,39 +141,6 @@ export default function PaymentForm({ publicKey, onSendSuccess }: PaymentFormPro
         </div>
       </div>
 
-      <style>{`
-        .bc-panel-full { grid-column: 1 / -1; }
-        .bc-field { margin-bottom: 1rem; }
-        .bc-field label {
-          display: block;
-          font-family: 'DM Mono', monospace; font-size: 0.68rem;
-          color: var(--muted); letter-spacing: 0.15em;
-          margin-bottom: 0.4rem; text-transform: uppercase;
-        }
-        .bc-field input {
-          width: 100%; background: var(--off);
-          border: 1px solid var(--red-dim); border-radius: 8px;
-          color: var(--white); font-family: 'DM Mono', monospace;
-          font-size: 0.82rem; padding: 0.75rem 1rem; outline: none;
-          transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        .bc-field input:focus {
-          border-color: var(--red);
-          box-shadow: 0 0 0 3px var(--red-glow);
-        }
-        .bc-field input::placeholder { color: var(--muted); }
-        .bc-field input:disabled { opacity: 0.4; cursor: not-allowed; }
-        .bc-feedback { white-space: pre-wrap; }
-        .stat-val {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: 2rem; color: var(--white); line-height: 1;
-        }
-        .stat-label {
-          font-family: 'DM Mono', monospace;
-          font-size: 0.65rem; color: var(--muted);
-          letter-spacing: 0.15em; margin-top: 0.25rem;
-        }
-      `}</style>
     </div>
   )
 }

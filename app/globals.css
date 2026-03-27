@@ -166,3 +166,151 @@ body::after {
   margin-bottom: 1rem;
   display: block;
 }
+
+/* ── Extracted from components to fix hydration error ── */
+
+/* WalletConnection */
+.wallet-connected {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: var(--green-dim);
+  border: 1px solid rgba(0,232,122,0.2);
+  border-radius: 6px; padding: 0.5rem 0.75rem;
+}
+.bc-dot-green {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  animation: pulse-green 2s ease infinite;
+  flex-shrink: 0;
+}
+.wallet-addr {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--green);
+}
+
+/* DonorRegistration */
+.form-row { display: flex; flex-direction: column; gap: 0.4rem; }
+.bc-field-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.blood-type-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem;
+}
+.blood-type-btn {
+  padding: 0.45rem 0;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem; font-weight: 500;
+  background: var(--mid); border: 1px solid var(--muted);
+  color: var(--white); border-radius: 5px; cursor: pointer;
+  transition: all 0.15s;
+}
+.blood-type-btn:hover { border-color: var(--red); color: var(--red); }
+.blood-type-btn.selected {
+  background: var(--red-dim); border-color: var(--red);
+  color: var(--white); box-shadow: 0 0 10px var(--red-glow);
+}
+.bc-progress-track {
+  width: 100%; height: 3px; background: var(--mid);
+  border-radius: 2px; margin-bottom: 1rem; overflow: hidden;
+}
+.bc-progress-fill {
+  height: 100%; background: var(--red); border-radius: 2px;
+  transition: width 0.4s ease; box-shadow: 0 0 8px var(--red-glow);
+}
+
+/* DonorLookup */
+.donor-card {
+  margin-top: 1rem; background: var(--mid);
+  border: 1px solid var(--red-dim); border-radius: 8px; padding: 1rem;
+}
+.donor-blood-badge {
+  font-family: 'Bebas Neue', sans-serif; font-size: 2rem;
+  color: var(--red); line-height: 1; margin-bottom: 0.75rem;
+}
+.donor-details { display: flex; flex-direction: column; gap: 0.4rem; }
+.donor-detail-row {
+  display: flex; justify-content: space-between;
+  font-size: 0.75rem; color: var(--muted);
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.donor-detail-row span:last-child { color: var(--white); }
+
+/* LiveStats */
+.live-count {
+  font-family: 'Bebas Neue', sans-serif; font-size: 4rem; line-height: 1;
+  color: var(--red); display: flex; align-items: center;
+  justify-content: center; min-height: 4rem;
+}
+.pulse-red { animation: pulse-red-once 1.2s ease; }
+@keyframes pulse-red-once {
+  0%   { text-shadow: none; }
+  50%  { text-shadow: 0 0 40px var(--red); color: var(--accent); }
+  100% { text-shadow: none; }
+}
+
+/* BalanceDisplay */
+.balance-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem; line-height: 1;
+  color: var(--white); letter-spacing: 0.04em;
+  transition: color 0.3s;
+}
+.balance-num.loaded { color: var(--red); }
+.balance-unit {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.8rem; color: var(--muted);
+  letter-spacing: 0.2em; margin-top: 0.3rem;
+}
+
+/* PaymentForm */
+.bc-field { margin-bottom: 1rem; }
+.bc-field label {
+  display: block;
+  font-family: 'DM Mono', monospace; font-size: 0.68rem;
+  color: var(--muted); letter-spacing: 0.15em;
+  margin-bottom: 0.4rem; text-transform: uppercase;
+}
+.bc-field input {
+  width: 100%; background: var(--off);
+  border: 1px solid var(--red-dim); border-radius: 8px;
+  color: var(--white); font-family: 'DM Mono', monospace;
+  font-size: 0.82rem; padding: 0.75rem 1rem; outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.bc-field input:focus {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px var(--red-glow);
+}
+.bc-field input::placeholder { color: var(--muted); }
+.bc-field input:disabled { opacity: 0.4; cursor: not-allowed; }
+.stat-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem; color: var(--white); line-height: 1;
+}
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem; color: var(--muted);
+  letter-spacing: 0.15em; margin-top: 0.25rem;
+}
+
+/* TransactionHistory */
+.tx-log-list {
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--red-dim) transparent;
+}
+.tx-log-list li {
+  font-family: 'DM Mono', monospace; font-size: 0.72rem;
+  color: var(--muted); padding: 0.35rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  display: flex; gap: 0.75rem; align-items: flex-start;
+}
+.log-time { color: var(--red-dim); flex-shrink: 0; font-size: 0.65rem; }
+.log-msg { color: var(--white); opacity: 0.7; }
+.log-msg.ok { color: var(--green); opacity: 1; }
+.log-msg.err { color: var(--accent); opacity: 1; }

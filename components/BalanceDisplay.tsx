@@ -82,20 +82,6 @@ export default function BalanceDisplay({ publicKey, refreshTrigger }: BalanceDis
         </div>
       )}
 
-      <style>{`
-        .balance-num {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: 3.5rem; line-height: 1;
-          color: var(--white); letter-spacing: 0.04em;
-          transition: color 0.3s;
-        }
-        .balance-num.loaded { color: var(--red); }
-        .balance-unit {
-          font-family: 'DM Mono', monospace;
-          font-size: 0.8rem; color: var(--muted);
-          letter-spacing: 0.2em; margin-top: 0.3rem;
-        }
-      `}</style>
     </div>
   )
 }

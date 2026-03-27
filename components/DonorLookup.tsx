@@ -90,23 +90,6 @@ export default function DonorLookup() {
 
       {error && <div className="bc-feedback error" style={{ marginTop: '0.75rem' }}>✕ {error}</div>}
 
-      <style>{`
-        .donor-card {
-          margin-top: 1rem; background: var(--mid);
-          border: 1px solid var(--red-dim); border-radius: 8px; padding: 1rem;
-        }
-        .donor-blood-badge {
-          font-family: 'Bebas Neue', sans-serif; font-size: 2rem;
-          color: var(--red); line-height: 1; margin-bottom: 0.75rem;
-        }
-        .donor-details { display: flex; flex-direction: column; gap: 0.4rem; }
-        .donor-detail-row {
-          display: flex; justify-content: space-between;
-          font-size: 0.75rem; color: var(--muted);
-          padding: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-        .donor-detail-row span:last-child { color: var(--white); }
-      `}</style>
     </div>
   )
 }

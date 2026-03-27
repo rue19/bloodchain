@@ -71,19 +71,6 @@ export default function LiveStats({ refreshTrigger = 0 }: LiveStatsProps) {
         {CONTRACT_ID.slice(0, 10)}…{CONTRACT_ID.slice(-6)} ↗
       </a>
 
-      <style>{`
-        .live-count {
-          font-family: 'Bebas Neue', sans-serif; font-size: 4rem; line-height: 1;
-          color: var(--red); display: flex; align-items: center;
-          justify-content: center; min-height: 4rem;
-        }
-        .pulse-red { animation: pulse-red-once 1.2s ease; }
-        @keyframes pulse-red-once {
-          0%   { text-shadow: none; }
-          50%  { text-shadow: 0 0 40px var(--red); color: var(--accent); }
-          100% { text-shadow: none; }
-        }
-      `}</style>
     </div>
   )
 }

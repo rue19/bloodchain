@@ -101,25 +101,6 @@ export default function TransactionHistory({ publicKey, refreshTrigger }: Transa
         </div>
       )}
 
-      <style>{`
-        .tx-log-list {
-          list-style: none;
-          max-height: 200px;
-          overflow-y: auto;
-          scrollbar-width: thin;
-          scrollbar-color: var(--red-dim) transparent;
-        }
-        .tx-log-list li {
-          font-family: 'DM Mono', monospace; font-size: 0.72rem;
-          color: var(--muted); padding: 0.35rem 0;
-          border-bottom: 1px solid rgba(255,255,255,0.03);
-          display: flex; gap: 0.75rem; align-items: flex-start;
-        }
-        .log-time { color: var(--red-dim); flex-shrink: 0; font-size: 0.65rem; }
-        .log-msg { color: var(--white); opacity: 0.7; }
-        .log-msg.ok { color: var(--green); opacity: 1; }
-        .log-msg.err { color: var(--accent); opacity: 1; }
-      `}</style>
     </div>
   )
 }
