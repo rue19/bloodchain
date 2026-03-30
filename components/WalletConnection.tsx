@@ -63,27 +63,37 @@ export default function WalletConnection({ onConnect, onDisconnect }: WalletConn
 
       console.log('📱 Opening wallet modal...')
       
-      await kit.openModal({
-        onWalletSelected: async (option) => {
-          console.log('👝 Wallet selected:', option.id)
-          kit.setWallet(option.id)
-          const { address } = await kit.getAddress()
-          console.log('✅ Connected:', address)
-          setPublicKey(address)
-          localStorage.setItem('bc_wallet_pk', address)
-          onConnect(address, kit)
-        },
-      })
+      // Correct API: openModal returns a promise that resolves when wallet is selected
+      const selected = await kit.openModal()
+      
+      if (!selected) {
+        console.log('No wallet selected')
+        return
+      }
+
+      console.log('👝 Wallet selected:', selected.id)
+      kit.setWallet(selected.id)
+      
+      const { address } = await kit.getAddress()
+      console.log('✅ Connected:', address)
+      
+      setPublicKey(address)
+      localStorage.setItem('bc_wallet_pk', address)
+      onConnect(address, kit)
+      
     } catch (err: any) {
       console.error('❌ Connection error:', err)
       const msg: string = err?.message ?? String(err)
       
-      if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('not installed') || msg.toLowerCase().includes('freighter')) {
-        setError('Freighter wallet not found. Install it first.')
+      if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('not installed')) {
+        setError('Wallet not found. Make sure Freighter is installed.')
         setErrorType('wallet_not_found')
-      } else if (msg.toLowerCase().includes('reject') || msg.toLowerCase().includes('declined') || msg.toLowerCase().includes('cancel')) {
+      } else if (msg.toLowerCase().includes('user rejected') || msg.toLowerCase().includes('rejected') || msg.toLowerCase().includes('cancel')) {
         setError('Wallet connection rejected.')
         setErrorType('user_rejected')
+      } else if (msg.toLowerCase().includes('timeout')) {
+        setError('Connection timeout. Try again.')
+        setErrorType('unknown')
       } else {
         setError(`Error: ${msg}`)
         setErrorType('unknown')
