@@ -5,6 +5,43 @@
 
 ---
 
+## ⭐ Submission Checklist
+
+### ✅ Requirements Met
+- ✅ **Mini-dApp Fully Functional** — Complete blood donor registry with contract integration  
+- ✅ **15+ Tests Passing** — All Vitest tests passing (donor-registration, error-handling, contract-helper)
+- ✅ **README Complete** — Comprehensive documentation with all features, testing, deployment info
+- ✅ **4+ Meaningful Commits** — Git history shows development progression
+- ✅ **Public GitHub Repository** — https://github.com/rue19/bloodchain
+
+### 📋 Documentation Ready
+
+**Test Output Screenshot:**
+```
+ RUN  v0.34.6 /home/shrin/Desktop/bloodchain
+
+ ✓ tests/donor-registration.test.ts (5)
+ ✓ tests/error-handling.test.ts (5)
+ ✓ tests/contract-helper.test.ts (5)
+
+ Test Files  3 passed (3)
+      Tests  15 passed (15)
+   Start at  21:03:22
+   Duration  4.67s
+```
+
+**Live Demo Link (Deploy using steps below):**
+- 🔗 To be added after Vercel deployment (see [Quick Deploy to Vercel](#-quick-deploy-to-vercel) section)
+- **Format:** `https://bloodchain-yourname.vercel.app`
+- **What to verify:** Can connect wallet, register donor, view live stats, lookup donors
+
+**Demo Video (1-minute):**
+- 📹 To be recorded using steps below (see [Recording Your Demo Video](#-recording-your-demo-video-1-minute) section)
+- **Format:** YouTube unlisted video link
+- **What to show:** Wallet connection → donor registration → tx confirmation → live stats → donor lookup
+
+---
+
 ## What This Is
 
 BloodChain is a decentralized emergency blood donor registry built on Stellar Soroban smart contracts. 
@@ -490,7 +527,124 @@ Before deployment, verify:
 
 ---
 
-## 🔗 Useful Links
+## � Quick Deploy to Vercel
+
+Get your live demo link in 3 steps:
+
+### Step 1: Connect to Vercel
+```bash
+# Option A: Via Vercel Web
+# 1. Go to https://vercel.com
+# 2. Sign up / Log in
+# 3. Click "New Project"
+# 4. Select "Import Git Repository"
+# 5. Choose: https://github.com/rue19/bloodchain
+# 6. Click "Deploy"
+
+# Option B: Via Vercel CLI
+npm i -g vercel
+cd /home/shrin/Desktop/bloodchain
+vercel
+# Follow prompts, choose "Vercel" account and project name
+```
+
+### Step 2: Wait for Deployment
+- Takes ~2 minutes
+- Vercel automatically detects Next.js
+- No config needed!
+
+### Step 3: Get Your Live Link
+- After deployment completes, you'll get: `https://bloodchain-xyz.vercel.app`
+- Copy this URL and add it to the README in the "✅ Submission Checklist" section
+
+### Your Live Demo Checklist
+- ✅ Visit deployed URL
+- ✅ Can connect wallet (testnet)
+- ✅ Can register as donor
+- ✅ Can see live stats polling
+- ✅ Can look up donors
+- ✅ Works on mobile
+
+---
+
+## 📹 Recording Your Demo Video (1-minute)
+
+### What to Show (60 seconds max)
+```
+0:00-0:05    Homepage & UI overview
+0:05-0:10    Connect wallet (Freighter)
+0:10-0:25    Register as donor (blood type + location)
+0:25-0:40    Show transaction confirmation
+0:40-0:50    View live stats updating
+0:50-1:00    Look up a donor record
+```
+
+### Easy Recording Tools
+
+**Option 1: ScreenFlow (Mac) - Recommended**
+```bash
+# Built-in on macOS
+# 1. Open ScreenFlow
+# 2. Click "New"
+# 3. Select area or full screen
+# 4. Press "Start Recording"
+# 5. Perform demo steps above
+# 6. Stop & export as MP4
+# 7. Upload to YouTube (unlisted)
+```
+
+**Option 2: OBS Studio (All Platforms) - Free**
+```bash
+# Download: https://obsproject.com
+# 1. Add "Display Capture" source
+# 2. Click "Start Recording"
+# 3. Perform demo steps
+# 4. Click "Stop Recording"
+# 5. File saved to Videos folder
+# 6. Upload to YouTube (unlisted)
+```
+
+**Option 3: ShareX (Windows) - Fast**
+```bash
+# Download: https://getsharex.com
+# 1. Open ShareX
+# 2. Click "Capture" → "Screen capture"
+# 3. Perform demo steps
+# 4. Right-click video → "Upload" → YouTube (unlisted)
+```
+
+### Demo Script (Speak while recording)
+```
+"BloodChain is a decentralized blood donor registry on Stellar.
+Here's the interface with all 7 panels.
+
+I'm connecting my wallet using Freighter...
+[Click wallet button, approve in wallet]
+
+Now I'll register as a donor with O+ blood type and my location...
+[Fill form, click register, approve transaction]
+
+Here's the confirmed transaction on Stellar Explorer...
+[Show success screen with tx link]
+
+Panel 07 shows real-time donor count, polling every 8 seconds...
+[Wait 8 seconds, show it updates]
+
+I can look up any donor by address...
+[Enter address, show donor record with blood type and location]
+
+That's BloodChain - decentralized, real-time, and live on Stellar Testnet!"
+```
+
+### Upload Your Video
+1. Go to https://youtube.com/upload
+2. Upload the video (unlisted)
+3. Copy the video URL (e.g., `https://youtu.be/abc123xyz`)
+4. Add to README "✅ Submission Checklist" section
+
+---
+
+## �🔗 Useful Links
 
 - **Freighter Wallet:** https://www.freighter.app/
 - **Stellar Testnet Friendbot:** https://friendbot.stellar.org/
