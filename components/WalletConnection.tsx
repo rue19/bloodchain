@@ -5,6 +5,7 @@ import {
   StellarWalletsKit,
   WalletNetwork,
   allowAllModules,
+  FREIGHTER_ID,
 } from '@creit.tech/stellar-wallets-kit'
 
 interface WalletConnectionProps {
@@ -19,11 +20,11 @@ function getKit() {
     try {
       kitInstance = new StellarWalletsKit({
         network: WalletNetwork.TESTNET,
-        // Don't hardcode wallet ID - let user select from available wallets
+        selectedWalletId: FREIGHTER_ID,
         modules: allowAllModules(),
       })
     } catch (err) {
-      console.error('Failed to initialize wallet kit:', err)
+      console.error('❌ Failed to initialize wallet kit:', err)
       kitInstance = null
     }
   }
@@ -63,23 +64,20 @@ export default function WalletConnection({ onConnect, onDisconnect }: WalletConn
 
       console.log('📱 Opening wallet modal...')
       
-      // Correct API: openModal returns a promise that resolves when wallet is selected
-      const selected = await kit.openModal()
-      
-      if (!selected) {
-        console.log('No wallet selected')
-        return
-      }
-
-      console.log('👝 Wallet selected:', selected.id)
-      kit.setWallet(selected.id)
-      
-      const { address } = await kit.getAddress()
-      console.log('✅ Connected:', address)
-      
-      setPublicKey(address)
-      localStorage.setItem('bc_wallet_pk', address)
-      onConnect(address, kit)
+      // Use callback-based API (Level 1 working approach)
+      await kit.openModal({
+        onWalletSelected: async (option) => {
+          console.log('👝 Wallet selected:', option.id)
+          kit.setWallet(option.id)
+          
+          const { address } = await kit.getAddress()
+          console.log('✅ Connected:', address)
+          
+          setPublicKey(address)
+          localStorage.setItem('bc_wallet_pk', address)
+          onConnect(address, kit)
+        },
+      })
       
     } catch (err: any) {
       console.error('❌ Connection error:', err)
