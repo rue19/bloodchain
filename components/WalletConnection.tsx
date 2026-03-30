@@ -64,36 +64,42 @@ export default function WalletConnection({ onConnect, onDisconnect }: WalletConn
 
       console.log('📱 Opening wallet modal...')
       
-      // Use callback-based API (Level 1 working approach)
+      // Step 1: Open modal and wait for wallet selection
       await kit.openModal({
         onWalletSelected: async (option) => {
           console.log('👝 Wallet selected:', option.id)
           kit.setWallet(option.id)
-          
-          const { address } = await kit.getAddress()
-          console.log('✅ Connected:', address)
-          
-          setPublicKey(address)
-          localStorage.setItem('bc_wallet_pk', address)
-          onConnect(address, kit)
         },
       })
+
+      // Step 2: After modal closes, get the address from the selected wallet
+      const { address } = await kit.getAddress()
+      
+      if (!address) {
+        throw new Error('Failed to get wallet address')
+      }
+      
+      console.log('✅ Connected:', address)
+      
+      setPublicKey(address)
+      localStorage.setItem('bc_wallet_pk', address)
+      onConnect(address, kit)
       
     } catch (err: any) {
       console.error('❌ Connection error:', err)
       const msg: string = err?.message ?? String(err)
       
       if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('not installed')) {
-        setError('Wallet not found. Make sure Freighter is installed.')
+        setError('Freighter wallet not found. Install Freighter extension first.')
         setErrorType('wallet_not_found')
-      } else if (msg.toLowerCase().includes('user rejected') || msg.toLowerCase().includes('rejected') || msg.toLowerCase().includes('cancel')) {
-        setError('Wallet connection rejected.')
+      } else if (msg.toLowerCase().includes('user rejected') || msg.toLowerCase().includes('rejected')) {
+        setError('Wallet connection rejected by user.')
         setErrorType('user_rejected')
       } else if (msg.toLowerCase().includes('timeout')) {
-        setError('Connection timeout. Try again.')
-        setErrorType('unknown')
+        setError('Connection timeout. Make sure Freighter is open.')
+        setErrorType('wallet_not_found')
       } else {
-        setError(`Error: ${msg}`)
+        setError(`Connection failed: ${msg}`)
         setErrorType('unknown')
       }
     } finally {
