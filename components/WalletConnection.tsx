@@ -45,62 +45,47 @@ export default function WalletConnection({ onConnect, onDisconnect }: WalletConn
         onConnect(stored, kit)
       }
     }
-  }, [onConnect])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const handleConnect = async () => {
     setLoading(true)
     setError(null)
     setErrorType(null)
     
-    console.log('🔌 Attempting to connect wallet...')
+    console.log('🔌 Connecting wallet...')
     
     try {
       const kit = getKit()
       if (!kit) {
-        throw new Error('Wallet kit initialization failed')
+        throw new Error('Wallet kit failed to initialize')
       }
 
       console.log('📱 Opening wallet modal...')
       
-      // Try direct connection first
-      try {
-        const { address } = await kit.getAddress()
-        console.log('✅ Direct connection successful:', address)
-        setPublicKey(address)
-        localStorage.setItem('bc_wallet_pk', address)
-        onConnect(address, kit)
-        return
-      } catch (directErr) {
-        console.log('📋 Direct connection failed, trying modal:', directErr)
-      }
-
-      // Fall back to modal
       await kit.openModal({
         onWalletSelected: async (option) => {
           console.log('👝 Wallet selected:', option.id)
           kit.setWallet(option.id)
           const { address } = await kit.getAddress()
-          console.log('✅ Address obtained:', address)
+          console.log('✅ Connected:', address)
           setPublicKey(address)
           localStorage.setItem('bc_wallet_pk', address)
           onConnect(address, kit)
         },
       })
     } catch (err: any) {
-      console.error('❌ Wallet connection error:', err)
+      console.error('❌ Connection error:', err)
       const msg: string = err?.message ?? String(err)
       
       if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('not installed') || msg.toLowerCase().includes('freighter')) {
-        setError('Freighter wallet not found. Install the Freighter browser extension first.')
+        setError('Freighter wallet not found. Install it first.')
         setErrorType('wallet_not_found')
-      } else if (msg.toLowerCase().includes('reject') || msg.toLowerCase().includes('declined') || msg.toLowerCase().includes('cancelled')) {
-        setError('Wallet connection was rejected. Try again.')
+      } else if (msg.toLowerCase().includes('reject') || msg.toLowerCase().includes('declined') || msg.toLowerCase().includes('cancel')) {
+        setError('Wallet connection rejected.')
         setErrorType('user_rejected')
-      } else if (msg.toLowerCase().includes('timeout')) {
-        setError('Wallet connection timed out. Make sure Freighter is open and try again.')
-        setErrorType('wallet_not_found')
       } else {
-        setError(`Connection failed: ${msg}`)
+        setError(`Error: ${msg}`)
         setErrorType('unknown')
       }
     } finally {
