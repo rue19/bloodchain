@@ -73,6 +73,21 @@ export function classifyError(err: unknown): ContractCallResult<never> {
     }
   }
 
+  // Handle wallet communication errors
+  if (
+    msg.includes('timeout') ||
+    msg.includes('channel closed') ||
+    msg.includes('message channel closed') ||
+    msg.includes('connection interrupted') ||
+    msg.includes('wallet connection interrupted')
+  ) {
+    return {
+      status: 'error',
+      error: 'Wallet communication timeout. Ensure Freighter is open and try again.',
+      errorType: 'wallet_not_found',
+    }
+  }
+
   return {
     status: 'error',
     error: err instanceof Error ? err.message : 'An unknown error occurred.',
@@ -115,9 +130,25 @@ export async function registerDonor(
 
     const preparedTx = StellarSdk.SorobanRpc.assembleTransaction(tx, simResult).build()
 
-    const { signedTxXdr } = await signTransaction(preparedTx.toXDR(), {
-      networkPassphrase: NETWORK_PASSPHRASE,
-    })
+    // Sign with timeout and error handling for wallet communication
+    let signedTxXdr: string
+    try {
+      const signResult = await Promise.race([
+        signTransaction(preparedTx.toXDR(), {
+          networkPassphrase: NETWORK_PASSPHRASE,
+        }),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Wallet signing timeout - please try again')), 45000)
+        ),
+      ]) as { signedTxXdr: string }
+      signedTxXdr = signResult.signedTxXdr
+    } catch (signErr: any) {
+      const msg = (signErr?.message ?? String(signErr)).toLowerCase()
+      if (msg.includes('timeout') || msg.includes('closed') || msg.includes('channel')) {
+        throw new Error('Wallet connection interrupted. Please ensure Freighter is open and try again.')
+      }
+      throw signErr
+    }
 
     const submitResult = await server.sendTransaction(
       StellarSdk.TransactionBuilder.fromXDR(signedTxXdr, NETWORK_PASSPHRASE)
