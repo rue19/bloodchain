@@ -13,38 +13,29 @@ interface WalletConnectionProps {
   onDisconnect: () => void
 }
 
-let kitInstance: StellarWalletsKit | null = null
+let kit: StellarWalletsKit | null = null
 
-function getKit() {
-  if (!kitInstance) {
-    try {
-      kitInstance = new StellarWalletsKit({
-        network: WalletNetwork.TESTNET,
-        selectedWalletId: FREIGHTER_ID,
-        modules: allowAllModules(),
-      })
-    } catch (err) {
-      console.error('❌ Failed to initialize wallet kit:', err)
-      kitInstance = null
-    }
+function initKit() {
+  if (!kit) {
+    kit = new StellarWalletsKit({
+      network: WalletNetwork.TESTNET,
+      selectedWalletId: FREIGHTER_ID,
+      modules: allowAllModules(),
+    })
   }
-  return kitInstance
+  return kit
 }
 
 export default function WalletConnection({ onConnect, onDisconnect }: WalletConnectionProps) {
   const [publicKey, setPublicKey] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [errorType, setErrorType] = useState<string | null>(null)
 
   useEffect(() => {
-    const stored = localStorage.getItem('bc_wallet_pk')
+    const stored = localStorage.getItem('bc_wallet')
     if (stored) {
-      const kit = getKit()
-      if (kit) {
-        setPublicKey(stored)
-        onConnect(stored, kit)
-      }
+      setPublicKey(stored)
+      onConnect(stored, initKit())
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -52,70 +43,46 @@ export default function WalletConnection({ onConnect, onDisconnect }: WalletConn
   const handleConnect = async () => {
     setLoading(true)
     setError(null)
-    setErrorType(null)
-    
-    console.log('🔌 Connecting wallet...')
-    
-    try {
-      const kit = getKit()
-      if (!kit) {
-        throw new Error('Wallet kit failed to initialize')
-      }
 
-      console.log('📱 Opening wallet modal...')
-      
-      // Step 1: Open modal and wait for wallet selection
-      await kit.openModal({
-        onWalletSelected: async (option) => {
-          console.log('👝 Wallet selected:', option.id)
-          kit.setWallet(option.id)
+    try {
+      console.log('📱 Initializing wallet kit...')
+      const walletKit = initKit()
+
+      console.log('🔌 Opening wallet modal...')
+      await walletKit.openModal({
+        onWalletSelected: (option) => {
+          console.log('✅ Selected:', option.id)
+          walletKit.setWallet(option.id)
         },
       })
 
-      // Step 2: After modal closes, get the address from the selected wallet
-      const { address } = await kit.getAddress()
-      
+      console.log('⏳ Getting address...')
+      const { address } = await walletKit.getAddress()
+
       if (!address) {
-        throw new Error('Failed to get wallet address')
+        throw new Error('No address returned')
       }
-      
-      console.log('✅ Connected:', address)
-      
+
+      console.log('🎉 Connected:', address)
+
       setPublicKey(address)
-      localStorage.setItem('bc_wallet_pk', address)
-      onConnect(address, kit)
-      
+      localStorage.setItem('bc_wallet', address)
+      onConnect(address, walletKit)
     } catch (err: any) {
-      console.error('❌ Connection error:', err)
-      const msg: string = err?.message ?? String(err)
-      
-      if (msg.toLowerCase().includes('not found') || msg.toLowerCase().includes('not installed')) {
-        setError('Freighter wallet not found. Install Freighter extension first.')
-        setErrorType('wallet_not_found')
-      } else if (msg.toLowerCase().includes('user rejected') || msg.toLowerCase().includes('rejected')) {
-        setError('Wallet connection rejected by user.')
-        setErrorType('user_rejected')
-      } else if (msg.toLowerCase().includes('timeout')) {
-        setError('Connection timeout. Make sure Freighter is open.')
-        setErrorType('wallet_not_found')
-      } else {
-        setError(`Connection failed: ${msg}`)
-        setErrorType('unknown')
-      }
+      console.error('❌ Error:', err)
+      const msg = err?.message || String(err)
+      setError(msg.includes('rejected') ? 'Connection rejected' : msg)
     } finally {
       setLoading(false)
     }
   }
 
   const handleDisconnect = () => {
-    kitInstance = null
-    localStorage.removeItem('bc_wallet_pk')
+    kit = null
     setPublicKey(null)
-    setError(null)
+    localStorage.removeItem('bc_wallet')
     onDisconnect()
   }
-
-  const shortKey = (pk: string) => `${pk.slice(0, 6)}···${pk.slice(-6)}`
 
   return (
     <div className="bc-panel">
@@ -123,30 +90,45 @@ export default function WalletConnection({ onConnect, onDisconnect }: WalletConn
 
       {!publicKey ? (
         <>
-          <button className="bc-btn bc-btn-primary" onClick={handleConnect} disabled={loading}>
-            {loading ? <><span className="bc-spinner" /> Connecting…</> : '⬡ Connect Wallet'}
+          <button
+            className="bc-btn bc-btn-primary"
+            onClick={handleConnect}
+            disabled={loading}
+          >
+            {loading ? <>🔄 Connecting...</> : '⬡ Connect Wallet'}
           </button>
-          <p style={{ fontSize: '0.7rem', color: 'var(--muted)', marginTop: '0.5rem', fontFamily: 'DM Mono, monospace' }}>
-            Freighter · xBull · Lobstr · WalletConnect
+          <p style={{ fontSize: '0.7rem', color: 'var(--muted)', marginTop: '0.5rem' }}>
+            Freighter · xBull · Lobstr
           </p>
         </>
       ) : (
         <>
-          <div className="wallet-connected">
-            <span className="bc-dot-green" />
-            <span className="wallet-addr">{shortKey(publicKey)}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', background: '#00e87a' }} />
+            <span>{publicKey.slice(0, 6)}···{publicKey.slice(-6)}</span>
           </div>
-          <button className="bc-btn bc-btn-ghost" style={{ marginTop: '0.75rem' }} onClick={handleDisconnect}>
+          <button
+            className="bc-btn bc-btn-ghost"
+            onClick={handleDisconnect}
+            style={{ marginTop: '0.5rem' }}
+          >
             Disconnect
           </button>
         </>
       )}
 
       {error && (
-        <div className="bc-feedback error" style={{ marginTop: '0.75rem' }} data-error-type={errorType}>
-          {errorType === 'wallet_not_found' && '🔌 '}
-          {errorType === 'user_rejected' && '✋ '}
-          {error}
+        <div
+          style={{
+            marginTop: '0.75rem',
+            padding: '0.5rem',
+            background: 'rgba(232,0,45,0.1)',
+            color: '#e8002d',
+            borderRadius: '4px',
+            fontSize: '0.75rem',
+          }}
+        >
+          🔌 {error}
         </div>
       )}
     </div>
