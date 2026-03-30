@@ -19,7 +19,7 @@ function getKit() {
     try {
       kitInstance = new StellarWalletsKit({
         network: WalletNetwork.TESTNET,
-        selectedWalletId: 'FREIGHTER',
+        // Don't hardcode wallet ID - let user select from available wallets
         modules: allowAllModules(),
       })
     } catch (err) {
