@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { StellarWalletsKit, ISupportedWallet } from '@creit.tech/stellar-wallets-kit'
+import { StellarWalletsKit, ISupportedWallet, WalletNetwork, FREIGHTER_ID, FreighterModule, xBullModule, LobstrModule, AlbedoModule } from '@creit.tech/stellar-wallets-kit'
 import { getBalance } from '../lib/stellar-helper'
 
 interface WalletConnectionProps {
@@ -17,7 +17,6 @@ function getKit(): StellarWalletsKit {
     throw new Error('Wallet kit requires browser environment')
   }
   if (!_kitInstance) {
-    const { StellarWalletsKit, WalletNetwork, FREIGHTER_ID, FreighterModule, xBullModule, LobstrModule, AlbedoModule } = require('@creit.tech/stellar-wallets-kit')
     _kitInstance = new StellarWalletsKit({
       network: WalletNetwork.TESTNET,
       selectedWalletId: FREIGHTER_ID,
@@ -29,7 +28,7 @@ function getKit(): StellarWalletsKit {
       ],
     })
   }
-  return _kitInstance!
+  return _kitInstance
 }
 
 export default function WalletConnection({
